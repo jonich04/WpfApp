@@ -29,18 +29,15 @@ namespace CurrencyAppWPF.ViewModels
             set => SetProperty(ref _isLoading, value);
         }
 
-        public IAsyncRelayCommand LoadCurrenciesCommand { get; }
-        public IAsyncRelayCommand UpdateFromApiCommand { get; }
-        public IRelayCommand<Currency> DeleteCurrencyCommand { get; }
+        public IAsyncRelayCommand LoadCurrenciesCommand => new AsyncRelayCommand(LoadCurrencies);
+        public IAsyncRelayCommand UpdateFromApiCommand => new AsyncRelayCommand(UpdateFromApi);
+        public IRelayCommand<Currency> DeleteCurrencyCommand => new RelayCommand<Currency>(DeleteCurrency);
+
 
         public MainViewModel(IDataService dataService)
         {
             _dataService = dataService;
             _apiService = new CurrencyApiService();
-
-            LoadCurrenciesCommand = new AsyncRelayCommand(LoadCurrencies);
-            UpdateFromApiCommand = new AsyncRelayCommand(UpdateFromApi);
-            DeleteCurrencyCommand = new RelayCommand<Currency>(DeleteCurrency);
 
             LoadLastSessionDate();
             _ = LoadCurrencies();
