@@ -10,7 +10,7 @@ namespace CurrencyAppWPF.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly JsonDataService _dataService;
+        private readonly IDataService _dataService;
         private readonly CurrencyApiService _apiService;
 
         public ObservableCollection<Currency> Currencies { get; } = new();
@@ -33,9 +33,9 @@ namespace CurrencyAppWPF.ViewModels
         public IAsyncRelayCommand UpdateFromApiCommand { get; }
         public IRelayCommand<Currency> DeleteCurrencyCommand { get; }
 
-        public MainViewModel()
+        public MainViewModel(IDataService dataService)
         {
-            _dataService = new JsonDataService();
+            _dataService = dataService;
             _apiService = new CurrencyApiService();
 
             LoadCurrenciesCommand = new AsyncRelayCommand(LoadCurrencies);

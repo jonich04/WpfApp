@@ -32,24 +32,64 @@ namespace CurrencyAppWPF.ViewModels
 
         public SettingsViewModel()
         {
-            UseJson = true;
-            UseSqlite = false;
-            
-        }
+            LoadSettings();
 
-        private void Save()
+        }
+        private void LoadSettings()
         {
-            if (UseJson)
+            string settingsPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "CurrencyAppWPF",
+                "settings.txt");
+
+            if (System.IO.File.Exists(settingsPath))
             {
-                InfoText = "Сохранено: использование JSON";
+                string saved = System.IO.File.ReadAllText(settingsPath);
+                if (saved == "SQLITE")
+                {
+                    UseJson = false;
+                    UseSqlite = true;
+                }
+                else
+                {
+                    UseJson = true;
+                    UseSqlite = false;
+                }
             }
-            else if (UseSqlite)
+            else
             {
                 UseJson = true;
                 UseSqlite = false;
             }
         }
+      
+        private void SaveSettings()
+        {
+            string settingsPath = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "CurrencyAppWPF",
+                "settings.txt");
 
+            string directory = System.IO.Path.GetDirectoryName(settingsPath);
+            if (!System.IO.Directory.Exists(directory))
+                System.IO.Directory.CreateDirectory(directory);
+
+            string setting = UseSqlite ? "SQLITE" : "JSON";
+            System.IO.File.WriteAllText(settingsPath, setting);
+        }
+        private void Save()
+        {
+            SaveSettings();
+
+            if (UseJson)
+            {
+                InfoText = "Сохранено в JSON";
+            }
+            else if (UseSqlite)
+            {
+                InfoText = "Сохранено в SQLite";
+            }
+        }
         private void Close()
         {
             RequestClose?.Invoke(this, System.EventArgs.Empty);
