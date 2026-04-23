@@ -10,7 +10,7 @@ namespace CurrencyAppWPF.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly IDataService _dataService;
+        private  IDataService _dataService;
         private readonly CurrencyApiService _apiService;
 
         public ObservableCollection<Currency> Currencies { get; } = new();
@@ -154,5 +154,35 @@ namespace CurrencyAppWPF.ViewModels
             File.WriteAllText(sessionFile, currentDate);
             LastSessionDate = $"Последняя сессия: {currentDate}";
         }
+        public async Task ChangeDataService(IDataService newDataService)
+        {
+            IsLoading = true;
+
+            try
+            {
+                _dataService = newDataService;
+                var currenciesFromNewService = await _dataService.LoadCurrenciesAsync();
+                Currencies.Clear();
+
+                if (currenciesFromNewService.Count > 0)
+                {
+                    foreach (var currency in currenciesFromNewService)
+                        Currencies.Add(currency);
+                }
+                else
+                {
+                    await UpdateFromApi();
+                }
+            }
+            catch (Exception ex)
+            {
+                LastSessionDate = $"Ошибка смены сервиса: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        
+    }
     }
 }

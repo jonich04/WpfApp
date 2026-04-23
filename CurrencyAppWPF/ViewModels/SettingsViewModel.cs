@@ -25,6 +25,7 @@ namespace CurrencyAppWPF.ViewModels
             get => _infoText;
             set => SetProperty(ref _infoText, value);
         }
+        public event EventHandler<bool> DataServiceChanged;
         public ICommand CloseCommand => new RelayCommand(Close);
         public ICommand SaveCommand => new RelayCommand(Save);
 
@@ -80,7 +81,7 @@ namespace CurrencyAppWPF.ViewModels
         private void Save()
         {
             SaveSettings();
-
+            DataServiceChanged?.Invoke(this, UseSqlite);
             if (UseJson)
             {
                 InfoText = "Сохранено в JSON";
